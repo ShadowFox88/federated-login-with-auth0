@@ -43,18 +43,6 @@
         "import/no-anonymous-default-export": "off",
         "no-console": "warn",
         "no-control-regex": "off",
-        "no-unused-vars": "off",
-        "react-hooks/exhaustive-deps": "off",
-        "react/no-unescaped-entities": [
-            "warn",
-            {
-                "forbid": [
-                    ">",
-                    "}"
-                ]
-            }
-        ],
-        "react/prop-types": "off",
-        "react/react-in-jsx-scope": "off"
+        "no-unused-vars": "off"
     }
 }

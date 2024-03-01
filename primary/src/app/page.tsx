@@ -14,11 +14,11 @@ export default function Home() {
 
         const details = formDataToJson<Details>(event.target);
         await fetch("/api/login", {
-            method: "POST",
+            body: JSON.stringify(details),
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(details),
+            method: "POST",
         });
     };
 

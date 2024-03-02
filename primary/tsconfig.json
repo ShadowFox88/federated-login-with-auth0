@@ -12,19 +12,19 @@
         "moduleResolution": "Bundler",
         "noEmit": true,
         "paths": {
-            "@/*": ["./src/*"],
-            "~/*": ["./*"],
+            "global/*": ["../global/*"],
+            "~/*": ["./src/*"]
         },
+        "plugins": [
+            {
+                "name": "next"
+            }
+        ],
         "resolveJsonModule": true,
         "skipLibCheck": true,
         "strict": true,
-        "target": "ESNext",
-        "plugins": [
-            {
-                "name": "next",
-            },
-        ],
+        "target": "ESNext"
     },
     "exclude": ["node_modules/"],
-    "include": ["./src/**/*", "./*.js", "./*.cjs", "./*.ts", ".next/types/**/*.ts"],
+    "include": ["./src/**/*", "./*.js", "./*.cjs", "./*.ts", ".next/types/**/*.ts"]
 }

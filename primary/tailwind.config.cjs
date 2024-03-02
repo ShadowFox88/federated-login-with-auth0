@@ -3,6 +3,6 @@ const tailwindCSSTypography = require("@tailwindcss/typography");
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-    content: ["src/app/**/*.tsx"],
+    content: ["src/**/*.tsx"],
     plugins: [daisyUI, tailwindCSSTypography],
 };

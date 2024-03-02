@@ -1,12 +1,6 @@
-type Username = string;
-interface PartialUser {
-    password: string;
-    accessToken?: string;
-}
+import { PartialUser, User } from "global/types";
 
-interface User extends PartialUser {
-    accessToken: string;
-}
+type Username = string;
 
 const store: Record<Username, User | undefined> = {};
 
@@ -17,8 +11,9 @@ function get(username: Username) {
 const generateAccessToken = (username: string) => username.split("").reverse().join();
 
 function create(username: Username, properties: PartialUser): User {
-    const newUser = {
+    const newUser: User = {
         accessToken: properties.accessToken || generateAccessToken(username),
+        name: username,
         password: properties.password,
     };
     store[username] = newUser;

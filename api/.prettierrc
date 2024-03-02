@@ -2,11 +2,12 @@
     "$schema": "https://json.schemastore.org/prettierrc",
     "arrowParens": "avoid",
     "importOrder": [
-        "<BUIBUILTIN_MODULES>",
+        "<BUILTIN_MODULES>",
         "",
         "<THIRD_PARTY_MODULES>",
         "",
         "^~/(.*)",
+        "^global/(.*)",
         "^/(.*)",
         "^./(.*)",
         "^../(.*)",

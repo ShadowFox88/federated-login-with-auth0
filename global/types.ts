@@ -1,18 +1,29 @@
+interface Message {
+    message: string;
+}
+
 export interface Details {
     username: string;
     password: string;
 }
-type Message = { message: string };
-export type ValidatePayload<Status extends number = 200> = Status extends 200
+
+export interface PartialUser {
+    accessToken?: string;
+    name: string;
+    password: string;
+}
+
+export interface User extends PartialUser {
+    accessToken: string;
+}
+
+export type LogInPayload<Status extends number = 200> = Status extends 200
     ? {
-          accessToken: string;
           fresh: boolean;
+          user: User;
       }
     : Status extends 404
       ? Message
       : never;
-export type AddPayload<Status extends number = 200> = Status extends 200
-    ? null
-    : Status extends 401
-      ? Message
-      : never;
+
+export type SignUpPayload = Message;

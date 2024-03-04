@@ -1,7 +1,0 @@
-.next
-.pnp.*
-.yarn
-build
-bun.lockb
-coverage
-pnpm-lock.yaml

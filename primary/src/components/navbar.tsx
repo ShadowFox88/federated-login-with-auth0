@@ -1,7 +1,7 @@
-import { User } from "global/types";
+import { SafeUser } from "global/types";
 
 interface Properties {
-    user?: User;
+    user?: SafeUser;
 }
 
 export default function NavBar(properties: Properties) {

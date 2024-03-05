@@ -1,10 +1,11 @@
-import store from "~/server/store";
-import { Details, LogInPayload } from "global/types";
+import accessTokens from "~/server/access-tokens";
+import users from "~/server/users";
+import { Details, LogInPayload, SafeUser } from "global/types";
 import { quickResponseWithStatus } from "global/utils";
 
 export async function POST(request: Request) {
     const details: Details = await request.json();
-    const userFound = store.get(details.username);
+    const userFound = users.get(details.username);
 
     if (!userFound) {
         return quickResponseWithStatus<LogInPayload<404>>(404, {
@@ -12,20 +13,24 @@ export async function POST(request: Request) {
         });
     }
 
-    if (userFound.accessToken) {
+    const safeUser: SafeUser = {
+        name: userFound.name,
+    };
+    const accessTokenFound = accessTokens.get(details.username);
+
+    if (accessTokenFound) {
         return quickResponseWithStatus<LogInPayload>(200, {
-            fresh: false,
-            user: userFound,
+            accessToken: accessTokenFound,
+            message: "Successfully logged in",
+            user: safeUser,
         });
     }
 
-    const newUser = store.create(details.username, {
-        password: details.password,
-        name: details.username,
-    });
+    const newAccessToken = accessTokens.create(details.username);
 
     return quickResponseWithStatus<LogInPayload>(200, {
-        fresh: true,
-        user: newUser,
+        accessToken: newAccessToken,
+        message: "Successfully logged in",
+        user: safeUser,
     });
 }

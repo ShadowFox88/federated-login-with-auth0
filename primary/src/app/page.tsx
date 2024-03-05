@@ -1,36 +1,65 @@
 "use client";
 
-import { useState } from "react";
+import { getCookie, setCookie } from "cookies-next";
+import { useEffect, useState } from "react";
 
-import { LogInPayload, SignUpPayload } from "global/types";
-import { formDataToJson } from "global/utils";
 import NavBar from "~/components/navbar";
+import { AccessToken, LogInPayload, SafeUser, SignUpPayload } from "global/types";
+import { formDataToJson } from "global/utils";
 
-import type { User } from "global/types";
-
-type Payload<Status extends number, ButtonType extends string = ""> = ButtonType extends "login"
-    ? LogInPayload<Status>
-    : ButtonType extends "sign-up"
-      ? SignUpPayload
-      : never;
+import type { UsersPayload } from "global/types";
 
 type SubmitButtonType = "login" | "sign-up";
 
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+const ignoreCleanup = () => {};
+
 export default function Home() {
-    const [user, setUser] = useState<User>();
+    const [user, setUser] = useState<SafeUser>();
     const [output, setOutput] = useState("");
     const [outputClassName, setOutputClassName] = useState("");
+    const accessToken = getCookie("accessToken");
 
     const clearOutput = () => setOutput("");
 
-    const postLoginDetails = async (event: React.SyntheticEvent<HTMLFormElement, SubmitEvent>) => {
+    const fetchUser = async (): Promise<void> => {
+        console.log(accessToken);
+        if (!accessToken) {
+            return;
+        }
+
+        const body = JSON.stringify({ accessToken });
+        // TODO: Prefer reading cookies from request on server over passing access token through
+        // requests
+        const response = await fetch("/api/users", {
+            headers: {
+                "Content-Type": "application/json",
+            },
+            method: "POST",
+            body,
+        });
+
+        if (!response.ok) {
+            return;
+        }
+
+        const payload: UsersPayload = await response.json();
+
+        setUser(payload.user);
+    };
+
+    // TODO: Refactor - break out into 2 separate functions handling logging in and signing up
+    // separately
+    const postLoginDetails = async (
+        event: React.SyntheticEvent<HTMLFormElement, SubmitEvent>,
+    ): Promise<void> => {
         event.preventDefault();
 
         const details = JSON.stringify(formDataToJson(event.target));
         const apiEndpoint = event.nativeEvent.submitter?.id as SubmitButtonType;
         const apiRoute = `/api/${apiEndpoint}`;
         const response = await fetch(apiRoute, {
-            body: JSON.stringify(details),
+            body: details,
             headers: {
                 "Content-Type": "application/json",
             },
@@ -39,26 +68,48 @@ export default function Home() {
         let newOutputClassName = "text-green-500";
         let newOutput = "";
 
+        // TODO: Refactor?
         if (!response.ok) {
             newOutputClassName = "text-red-500";
 
             if (apiEndpoint === "login") {
-                const payload: Payload<404, "login"> = await response.json();
+                const payload: LogInPayload<404> = await response.json();
                 newOutput = payload.message;
             } else if (apiEndpoint === "sign-up") {
-                const payload: Payload<401, "sign-up"> = await response.json();
+                const payload: SignUpPayload<401> = await response.json();
                 newOutput = payload.message;
             }
         } else {
-            const payload: Payload<200, "login"> = await response.json();
-            newOutput = apiEndpoint === "sign-up" ? "User created" : "User logged in";
+            let newUser: SafeUser | undefined;
+            let newAccessToken: AccessToken | undefined;
 
-            setUser(payload.user);
+            if (apiEndpoint === "login") {
+                const payload: LogInPayload = await response.json();
+                newOutput = payload.message;
+                newUser = payload.user;
+                newAccessToken = payload.accessToken;
+            } else if (apiEndpoint === "sign-up") {
+                const payload: SignUpPayload = await response.json();
+                newOutput = payload.message;
+                newUser = payload.user;
+                newAccessToken = payload.accessToken;
+            }
+
+            if (newUser && newAccessToken) {
+                setUser(newUser);
+                setCookie("accessToken", newAccessToken);
+            }
         }
 
         setOutputClassName(newOutputClassName);
         setOutput(newOutput);
     };
+
+    useEffect(() => {
+        fetchUser();
+
+        return ignoreCleanup;
+    }, []);
 
     return (
         <main>
@@ -85,6 +136,7 @@ export default function Home() {
                     />
                     {!output ? null : <span className={outputClassName}>{output}</span>}
                 </div>
+
                 <div className="flex gap-1.5">
                     <button
                         className="btn grow bg-green-400"

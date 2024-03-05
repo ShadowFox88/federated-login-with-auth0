@@ -1,29 +1,49 @@
-interface Message {
-    message: string;
-}
-
 export interface Details {
     username: string;
     password: string;
 }
 
-export interface PartialUser {
-    accessToken?: string;
+export interface User {
     name: string;
     password: string;
 }
 
-export interface User extends PartialUser {
-    accessToken: string;
-}
+export type SafeUser = Omit<User, "password">;
 
-export type LogInPayload<Status extends number = 200> = Status extends 200
-    ? {
-          fresh: boolean;
-          user: User;
-      }
-    : Status extends 404
-      ? Message
-      : never;
+export type AccessToken = string;
+export type Status<HTTPCodes extends number> = number | HTTPCodes;
 
-export type SignUpPayload = Message;
+export type LogInPayload<HTTPCode extends Status<200 | 404> = 200> =
+    HTTPCode extends 200 ?
+        {
+            accessToken: AccessToken;
+            message: string;
+            user: SafeUser;
+        }
+    : HTTPCode extends 404 ?
+        {
+            message: string;
+        }
+    :   never;
+
+export type SignUpPayload<HTTPCode extends Status<200 | 401> = 200> =
+    HTTPCode extends 200 ?
+        {
+            accessToken: AccessToken;
+            user: SafeUser;
+            message: string;
+        }
+    :   {
+            message: string;
+        };
+
+export type UsersPayload<HTTPCode extends Status<200 | 403 | 404> = 200> =
+    HTTPCode extends 200 ?
+        {
+            user: SafeUser;
+        }
+    : HTTPCode extends 403 | 404 ?
+        {
+            message: string;
+        }
+    :   never;

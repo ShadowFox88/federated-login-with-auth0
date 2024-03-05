@@ -23,7 +23,6 @@ export default function Home() {
     const clearOutput = () => setOutput("");
 
     const fetchUser = async (): Promise<void> => {
-        console.log(accessToken);
         if (!accessToken) {
             return;
         }

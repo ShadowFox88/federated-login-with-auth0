@@ -1,13 +1,13 @@
 "use client";
 
-import { getCookie, setCookie } from "cookies-next";
+import { deleteCookie, getCookie, setCookie } from "cookies-next";
 import { useEffect, useState } from "react";
 
 import NavBar from "~/components/navbar";
 import { AccessToken, LogInPayload, SafeUser, SignUpPayload } from "global/types";
 import { formDataToJson } from "global/utils";
 
-import type { UsersPayload } from "global/types";
+import type { LogOutPayload, UsersPayload } from "global/types";
 
 type SubmitButtonType = "login" | "sign-up";
 
@@ -104,6 +104,33 @@ export default function Home() {
         setOutput(newOutput);
     };
 
+    const logout = async (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.preventDefault();
+
+        if (!accessToken) {
+            return;
+        }
+
+        const response = await fetch("/api/logout", {
+            body: JSON.stringify({ accessToken }),
+            headers: {
+                "Content-Type": "application/json",
+            },
+            method: "POST",
+        });
+
+        if (!response.ok) {
+            return;
+        }
+
+        const payload: LogOutPayload = await response.json();
+
+        setUser(undefined);
+        deleteCookie("accessToken");
+        setOutputClassName("text-blue-400");
+        setOutput(payload.message);
+    };
+
     useEffect(() => {
         fetchUser();
 
@@ -154,6 +181,13 @@ export default function Home() {
                         Sign Up
                     </button>
                 </div>
+
+                {/* TODO: Apply suspense with loading spinner */}
+                {!user ? null : (
+                    <button className="btn bg-blue-400 text-white" onClick={logout}>
+                        Logout
+                    </button>
+                )}
             </form>
         </main>
     );

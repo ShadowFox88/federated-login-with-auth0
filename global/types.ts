@@ -13,6 +13,7 @@ export type SafeUser = Omit<User, "password">;
 export type AccessToken = string;
 export type Status<HTTPCodes extends number> = number | HTTPCodes;
 
+// TODO: Refactor using tRPC
 export type LogInPayload<HTTPCode extends Status<200 | 404> = 200> =
     HTTPCode extends 200 ?
         {
@@ -47,3 +48,7 @@ export type UsersPayload<HTTPCode extends Status<200 | 403 | 404> = 200> =
             message: string;
         }
     :   never;
+
+export type LogOutPayload = {
+    message: string;
+};

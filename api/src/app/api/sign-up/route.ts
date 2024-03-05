@@ -1,8 +1,9 @@
-import users from "~/server/users";
 import accessTokens from "~/server/access-tokens";
-
-import { Details, SignUpPayload, type SafeUser } from "global/types";
+import users from "~/server/users";
+import { Details, SignUpPayload } from "global/types";
 import { quickResponseWithStatus } from "global/utils";
+
+import type { SafeUser } from "global/types";
 
 export async function POST(request: Request) {
     const details: Details = await request.json();

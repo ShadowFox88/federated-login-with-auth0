@@ -5,11 +5,11 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "dev": "next dev --port 3001",
+        "dev": "next dev --port 3003",
         "build": "next build",
         "format": "prettier --write .",
-        "preview": "next build && next start --port 3001",
-        "start": "next start --port 3001",
+        "preview": "next build && next start --port 3003",
+        "start": "next start --port 3003",
         "lint": "next lint && tsc"
     },
     "dependencies": {

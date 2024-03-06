@@ -1,8 +1,9 @@
-import users from "~/server/users";
 import accessTokens from "~/server/access-tokens";
-
-import { AccessToken, UsersPayload, type SafeUser } from "global/types";
+import users from "~/server/users";
+import { AccessToken, UsersPayload } from "global/types";
 import { quickResponseWithStatus } from "global/utils";
+
+import type { SafeUser } from "global/types";
 
 interface Details {
     accessToken: AccessToken;

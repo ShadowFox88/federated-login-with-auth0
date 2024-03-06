@@ -1,6 +1,5 @@
 import findUsernameFromAccessToken from "~/interfaces/findUsernameFromAccessToken";
 import accessTokens from "~/server/access-tokens";
-import users from "~/server/users";
 import { AccessToken, LogOutPayload } from "global/types";
 import { quickResponseWithStatus } from "global/utils";
 
